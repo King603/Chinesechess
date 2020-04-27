@@ -10,7 +10,6 @@ bill.init = function () {
   } else bill.timer = setInterval(() => bill.init(), 300);
 }
 
-
 // 把所有棋谱写入棋谱列表
 bill.setBillList = function (map) {
   let list = com.get("billList")
@@ -20,13 +19,11 @@ bill.setBillList = function (map) {
     option.value = num;
     list.add(option, null);
   }
-
   list.addEventListener("change", function () {
     bill.setBox(com.store[this.value], map);
   });
   bill.setBox(com.store[0], map);
 }
-
 
 // 棋谱分析 写入
 bill.setMove = function (bl, index, map) {
@@ -38,7 +35,6 @@ bill.setMove = function (bl, index, map) {
       com.mans[key].isShow = !0;
     }
   }));
-
   for (let i = 0; i <= index; i++) {
     let n = i * 4;
     let y = bl[n + 1];
@@ -47,15 +43,12 @@ bill.setMove = function (bl, index, map) {
     let newY = bl[n + 3];
     if (com.mans[map[newY][newX]])
       com.mans[map[newY][newX]].isShow = !1;
-
-    com.mans[map[y][x]].x = newX;
+      com.mans[map[y][x]].x = newX;
     com.mans[map[y][x]].y = newY;
-
     if (i == index)
       com.showPane(x, y, newX, newY);
     map[newY][newX] = map[y][x];
     delete map[y][x];
-
   }
   return map;
 }
@@ -67,12 +60,10 @@ bill.setBox = function (bl, initMap) {
   for (let i = 0; i < bl.length; i += 4)
     h += `<li id="move_${i / 4})">${com.createMove(com.arr2Clone(initMap), bl[i + 0], bl[i + 1], bl[i + 2], bl[i + 3])}</li>`;
   com.get("billBox").innerHTML = h;
-
   com.get("billBox").getElementsByTagName("li").forEach(li => {
     li.addEventListener("click", function () {
       bill.setMove(bl, this.getAttribute("id").split("_")[1], initMap);
       com.show();
     });
   });
-
 }

@@ -189,11 +189,7 @@ AI.setHistoryTable = function (txtMap, depth, value) {
 // 评估棋局 取得棋盘双方棋子价值差
 AI.evaluate = function (map, my) {
   let val = 0;
-  map.forEach((keyList,i)=>{
-    keyList.forEach((key,n)=>{
-      key && (val += play.mans[key].value[i][n] * play.mans[key].my);
-    });
-  });
+  map.forEach((keyList, i) => keyList.forEach((key, n) => key && (val += play.mans[key].value[i][n] * play.mans[key].my)));
   // val+=Math.floor( Math.random() * 10);  //让AI走棋增加随机元素
   // com.show()
   // z(val*my)

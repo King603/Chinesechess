@@ -2,7 +2,6 @@
 let play = {};
 
 play.init = function () {
-
   play.my = 1; // 玩家方
   play.map = com.arr2Clone(com.initMap); // 初始化棋盘
   play.nowManKey = !1; // 现在要操作的棋子
@@ -14,13 +13,8 @@ play.init = function () {
   play.showPane = com.showPane;
   play.isOffensive = !0; // 是否先手
   play.depth = play.depth || 3; // 搜索深度
-
   play.isFoul = !1; // 是否犯规长将
-
-
-
   com.pane.isShow = !1; // 隐藏方块
-
   // 初始化棋子
   play.map.forEach((keyList, y) => {
     keyList.forEach((key, x) => {
@@ -32,7 +26,6 @@ play.init = function () {
     })
   });
   play.show();
-
   // 绑定点击事件
   com.canvas.addEventListener("click", play.clickCanvas)
   // clearInterval(play.timer);
@@ -41,31 +34,23 @@ play.init = function () {
   //   play.timer = setInterval("play.AIPlay()", 1000);
   //   play.AIPlay();
   // });
-
   // com.get("offensivePlay").addEventListener("click", function (e) {
   //   play.isOffensive = !0;
   //   play.isPlay = !0;
   //   com.get("chessRight").style.display = "none";
   //   play.init();
   // });
-
   // com.get("defensivePlay").addEventListener("click", function (e) {
   //   play.isOffensive = !1;
   //   play.isPlay = !0;
   //   com.get("chessRight").style.display = "none";
   //   play.init();
   // });
-
-
-
   com.get("regretBn").addEventListener("click", function (e) {
     play.regret();
   });
-
-
   // let initTime = new Date().getTime();
   for (let i = 0; i <= 100000; i++) {
-
     let h = play.map.join();
     for (let key in play.mans) {
       if (play.mans[key].show) h += play.mans[key].key + play.mans[key].x + play.mans[key].y;
@@ -73,11 +58,7 @@ play.init = function () {
   }
   // let nowTime = new Date().getTime();
   // z([h, nowTime - initTime]);
-
-
 }
-
-
 
 // 悔棋
 play.regret = function () {
@@ -95,7 +76,6 @@ play.regret = function () {
   let pace = play.pace;
   pace.pop();
   pace.pop();
-
   pace.forEach((arr, i) => {
     let p = arr.split("");
     let x = parseInt(p[0]);
@@ -117,22 +97,17 @@ play.regret = function () {
       com.alert([key, p, pace, map]);
     }
   })
-
   play.map = map;
   play.my = 1;
   play.isPlay = !0;
   com.show();
 }
 
-
-
 //点击棋盘事件
 play.clickCanvas = function (e) {
   if (!play.isPlay) return !1;
   let key = play.getClickMan(e);
-
   let { x, y } = play.getClickPoint(e);
-
   if (key) {
     play.clickMan(key, x, y);
   } else {
@@ -157,7 +132,6 @@ play.clickMan = function (key, x, y) {
       com.mans[play.nowManKey].x = x;
       com.mans[play.nowManKey].y = y;
       com.mans[play.nowManKey].alpha = 1
-
       play.pace.push(pace + x + y);
       play.nowManKey = !1;
       com.pane.isShow = !1;
@@ -205,7 +179,6 @@ play.clickPoint = function (x, y) {
       // alert("不能这么走哦！")	
     }
   }
-
 }
 
 // Ai自动走棋
@@ -218,12 +191,9 @@ play.AIPlay = function () {
   }
   play.pace.push(pace.join(""));
   play.nowManKey = play.map[pace[1]][pace[0]];
-
   let key = play.map[pace[3]][pace[2]];
   key ? play.AIclickMan(key, pace[2], pace[3]) : play.AIclickPoint(pace[2], pace[3]);
   com.get("clickAudio").play();
-
-
 }
 
 // 检查是否长将
@@ -233,19 +203,15 @@ play.checkFoul = function () {
   return len > 11 && p[len - 1] == p[len - 5] && p[len - 5] == p[len - 9] ? p[len - 4].split("") : !1;
 }
 
-
-
 play.AIclickMan = function (key, x, y) {
   // 吃子
   com.mans[key].isShow = !1;
   delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
   play.map[y][x] = play.nowManKey;
   play.showPane(com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y)
-
   com.mans[play.nowManKey].x = x;
   com.mans[play.nowManKey].y = y;
   play.nowManKey = !1;
-
   com.show()
   if (key == "j0") play.showWin(-1);
   if (key == "J0") play.showWin(1);
@@ -257,21 +223,16 @@ play.AIclickPoint = function (x, y) {
   if (play.nowManKey) {
     delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
     play.map[y][x] = key;
-
     com.showPane(man.x, man.y, x, y)
-
-
     man.x = x;
     man.y = y;
     play.nowManKey = !1;
-
   }
   com.show();
 }
 
-
 play.indexOfPs = function (ps, xy) {
-  for (let i of ps) 
+  for (let i of ps)
     if (i[0] == xy[0] && i[1] == xy[1]) return !0;
   return !1;
 }

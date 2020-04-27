@@ -111,8 +111,8 @@ window.onload = function () {
     }, 2000);
   })
 
-  com.getData("js/gambit.all.js", data => AI.historyBill = (com.gambit = data.split(" ")));
-  com.getData("js/store.js", data => com.store = data.split(" "));
+  com.getData("js/data/gambit.all.js", data => AI.historyBill = (com.gambit = data.split(" ")));
+  com.getData("js/data/store.js", data => com.store = data.split(" "));
 }
 
 // 载入图片
@@ -706,20 +706,22 @@ com.args = {
 };
 
 com.class = {} // 类
-com.class.Man = function (key, x = 0, y = 0) {
-  this.pater = key.slice(0, 1);
-  let { my, text, value, bl } = com.args[this.pater];
-  this.x = x;
-  this.y = y;
-  this.key = key;
-  this.my = my;
-  this.text = text;
-  this.value = value;
-  this.isShow = !0;
-  this.alpha = 1;
-  this.ps = []; // 着点
-
-  this.show = function () {
+com.class.Man = class {
+  constructor(key, x = 0, y = 0) {
+    this.pater = key.slice(0, 1);
+    let { my, text, value, bl } = com.args[this.pater];
+    this.x = x;
+    this.y = y;
+    this.key = key;
+    this.my = my;
+    this.text = text;
+    this.value = value;
+    this.isShow = !0;
+    this.alpha = 1;
+    this.ps = []; // 着点
+    this.b = bl;
+  }
+  show() {
     if (this.isShow) {
       com.ct.save();
       com.ct.globalAlpha = this.alpha;
@@ -727,30 +729,32 @@ com.class.Man = function (key, x = 0, y = 0) {
       com.ct.restore();
     }
   }
-
-  this.bl = function (map = play.map) {
-    return com.bylaw[bl](this.x, this.y, map, this.my)
+  bl(map = play.map) {
+    return com.bylaw[this.b](this.x, this.y, map, this.my);
   }
 }
 
-com.class.Bg = function (x = 0, y = 0) {
-  this.x = x;
-  this.y = y;
-  this.isShow = !0;
 
-  this.show = function () {
+com.class.Bg = class {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+    this.isShow = !0;
+  }
+  show() {
     this.isShow && com.ct.drawImage(com.bgImg, com.spaceX * this.x, com.spaceY * this.y);
   }
 }
 
-com.class.Pane = function (x = 0, y = 0) {
-  this.x = x;
-  this.y = y;
-  this.newX = x;
-  this.newY = y;
-  this.isShow = !0;
-
-  this.show = function () {
+com.class.Pane = class {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+    this.newX = x;
+    this.newY = y;
+    this.isShow = !0;
+  }
+  show() {
     if (this.isShow) {
       com.ct.drawImage(com.paneImg, com.spaceX * this.x + com.pointStartX, com.spaceY * this.y + com.pointStartY);
       com.ct.drawImage(com.paneImg, com.spaceX * this.newX + com.pointStartX, com.spaceY * this.newY + com.pointStartY);
@@ -758,13 +762,14 @@ com.class.Pane = function (x = 0, y = 0) {
   }
 }
 
-com.class.Dot = function (x = 0, y = 0) {
-  this.x = x;
-  this.y = y;
-  this.isShow = !0;
-  this.dots = [];
-
-  this.show = function () {
+com.class.Dot = class {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+    this.isShow = !0;
+    this.dots = [];
+  }
+  show() {
     this.dots.forEach(dot => this.isShow && com.ct.drawImage(com.dotImg, com.spaceX * dot[0] + 10 + com.pointStartX, com.spaceY * dot[1] + 10 + com.pointStartY));
   }
 }
