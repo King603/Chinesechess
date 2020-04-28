@@ -2,7 +2,6 @@
 let AI = {};
 // 历史表
 AI.historyTable = {};
-
 //人工智能初始化
 AI.init = function (pace) {
   let bill = AI.historyBill || com.gambit; //开局库
@@ -22,16 +21,13 @@ AI.init = function (pace) {
     } else {
       AI.historyBill = [];
     }
-
   }
   //如果棋谱里面没有，人工智能开始运作
   let initTime = new Date().getTime();
   AI.treeDepth = play.depth;
   //AI.treeDepth=4;
-
   AI.number = 0;
   AI.setHistoryTable.lenght = 0
-
   let val = AI.getAlphaBeta(-99999, 99999, AI.treeDepth, com.arr2Clone(play.map), play.my);
   //let val = AI.iterativeSearch(com.arr2Clone(play.map),play.my)
   if (!val || val.value == -8888) {
@@ -43,19 +39,18 @@ AI.init = function (pace) {
     let man = play.mans[val.key];
     let nowTime = new Date().getTime();
     let arr = [man.x, man.y, val.x, val.y];
-    com.get("moveInfo").innerHTML = '<h3>AI搜索结果：</h3>最佳着法：' +
+    com.get("moveInfo").innerHTML = "<h3>AI搜索结果：</h3>最佳着法：" +
       com.createMove(com.arr2Clone(play.map), ...arr) +
-      '<br />搜索深度：' + AI.treeDepth + '<br />搜索分支：' +
-      AI.number + '个 <br />最佳着法评估：' +
-      val.value + '分' +
-      ' <br />搜索用时：' +
-      (nowTime - initTime) + '毫秒'
+      "<br>搜索深度：" + AI.treeDepth + "<br>搜索分支：" +
+      AI.number + "个<br>最佳着法评估：" +
+      val.value + "分" +
+      "<br>搜索用时：" +
+      (nowTime - initTime) + "毫秒";
     return arr;
   } else {
     return !1;
   }
 }
-
 // 迭代加深搜索着法
 AI.iterativeSearch = function (map, my) {
   AI.treeDepth = 0;
@@ -68,7 +63,6 @@ AI.iterativeSearch = function (map, my) {
   }
   return !1;
 }
-
 // 取得棋盘上所有棋子
 AI.getMapAllMan = function (map, my) {
   let mans = [];
@@ -83,7 +77,6 @@ AI.getMapAllMan = function (map, my) {
   })
   return mans;
 }
-
 /* // 取得棋谱所有己方棋子的着法
 AI.getMoves = function (map, my, txtMap) {
   let highMores = []; // 优先级高的着法
@@ -96,13 +89,11 @@ AI.getMoves = function (map, my, txtMap) {
   });
   return highMores.concat(moves);
 } */
-
 // 取得棋谱所有己方棋子的着法
 AI.getMoves = function (map, my) {
-  let manArr = AI.getMapAllMan(map, my);
   let moves = [];
   let foul = play.isFoul;
-  for (let man of manArr) {
+  for (let man of AI.getMapAllMan(map, my)) {
     for (let n of man.bl(map)) {
       let { x, y } = man;
       let [newX, newY] = n;
@@ -114,7 +105,11 @@ AI.getMoves = function (map, my) {
   }
   return moves;
 }
-// A:当前棋手value/B:对手value/depth：层级
+/**
+ * A：当前棋手value
+ * B：对手value
+ * depth：层级
+ */
 AI.getAlphaBeta = function (A, B, depth, map, my) {
   // let txtMap = map.join();
   // let history = AI.historyTable[txtMap];
@@ -129,21 +124,17 @@ AI.getAlphaBeta = function (A, B, depth, map, my) {
   for ([oldX, oldY, newX, newY, key] of AI.getMoves(map, my)/* 生成全部走法 */) {
     // 走这个走法
     let clearKey = map[newY][newX] || "";
-
     map[newY][newX] = key;
     delete map[oldY][oldX];
     play.mans[key].x = newX;
     play.mans[key].y = newY;
-
     if (clearKey == "j0" || clearKey == "J0") { // 被吃老将,撤消这个走法; 
       undo();
-
       return { "key": key, "x": newX, "y": newY, "value": 8888 };
       // return rootKey; 
     } else {
       let val = -AI.getAlphaBeta(-B, -A, depth - 1, map, -my).value;
       // val = val || val.value;
-
       // 撤消这个走法;　 
       undo();
       if (val >= B) {
@@ -179,13 +170,11 @@ AI.getAlphaBeta = function (A, B, depth, map, my) {
   }
   return { "key": key, "x": newX, "y": newY, "value": A };
 }
-
 // 奖着法记录到历史表
 AI.setHistoryTable = function (txtMap, depth, value) {
   AI.setHistoryTable.lenght++;
   AI.historyTable[txtMap] = { depth, value }
 }
-
 // 评估棋局 取得棋盘双方棋子价值差
 AI.evaluate = function (map, my) {
   let val = 0;
@@ -196,7 +185,6 @@ AI.evaluate = function (map, my) {
   AI.number++;
   return val * my;
 }
-
 // 评估棋局 取得棋盘双方棋子价值差
 AI.evaluate1 = function (map, my) {
   let val = 0;
@@ -212,5 +200,3 @@ AI.evaluate1 = function (map, my) {
   AI.number++;
   return val * my;
 }
-
-

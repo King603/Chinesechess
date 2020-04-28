@@ -1,6 +1,4 @@
-
 let play = {};
-
 play.init = function () {
   play.my = 1; // 玩家方
   play.map = com.arr2Clone(com.initMap); // 初始化棋盘
@@ -59,20 +57,17 @@ play.init = function () {
   // let nowTime = new Date().getTime();
   // z([h, nowTime - initTime]);
 }
-
 // 悔棋
 play.regret = function () {
   let map = com.arr2Clone(com.initMap);
   // 初始化所有棋子
-  map.forEach((keyList, y) => {
-    keyList.forEach((key, x) => {
-      if (key) {
-        com.mans[key].x = x;
-        com.mans[key].y = y;
-        com.mans[key].isShow = !0;
-      }
-    })
-  })
+  map.forEach((keyList, y) => keyList.forEach((key, x) => {
+    if (key) {
+      com.mans[key].x = x;
+      com.mans[key].y = y;
+      com.mans[key].isShow = !0;
+    }
+  }));
   let pace = play.pace;
   pace.pop();
   pace.pop();
@@ -96,48 +91,43 @@ play.regret = function () {
       com.show();
       com.alert([key, p, pace, map]);
     }
-  })
+  });
   play.map = map;
   play.my = 1;
   play.isPlay = !0;
   com.show();
 }
-
-//点击棋盘事件
+// 点击棋盘事件
 play.clickCanvas = function (e) {
   if (!play.isPlay) return !1;
   let key = play.getClickMan(e);
   let { x, y } = play.getClickPoint(e);
-  if (key) {
-    play.clickMan(key, x, y);
-  } else {
-    play.clickPoint(x, y);
-  }
-  play.isFoul = play.checkFoul();//检测是不是长将
+  key ? play.clickMan(key, x, y) : play.clickPoint(x, y);
+  play.isFoul = play.checkFoul(); // 检测是不是长将
 }
-
-//点击棋子，两种情况，选中或者吃子
+let clickAudio = com.get("clickAudio");
+// 点击棋子，两种情况，选中或者吃子
 play.clickMan = function (key, x, y) {
   let man = com.mans[key];
-  //吃子
+  // 吃子
   if (play.nowManKey && play.nowManKey != key && man.my != com.mans[play.nowManKey].my) {
-    //man为被吃掉的棋子
+    // man为被吃掉的棋子
     if (play.indexOfPs(com.mans[play.nowManKey].ps, [x, y])) {
       man.isShow = !1;
-      let pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y
-      //z(bill.createMove(play.map,man.x,man.y,x,y))
+      let pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y;
+      // z(bill.createMove(play.map,man.x,man.y,x,y));
       delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
       play.map[y][x] = play.nowManKey;
-      com.showPane(com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y)
+      com.showPane(com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y);
       com.mans[play.nowManKey].x = x;
       com.mans[play.nowManKey].y = y;
-      com.mans[play.nowManKey].alpha = 1
+      com.mans[play.nowManKey].alpha = 1;
       play.pace.push(pace + x + y);
       play.nowManKey = !1;
       com.pane.isShow = !1;
       com.dot.dots = [];
-      com.show()
-      com.get("clickAudio").play();
+      com.show();
+      clickAudio.play();
       setTimeout(() => play.AIPlay(), 500);
       if (key == "j0") play.showWin(-1);
       if (key == "J0") play.showWin(1);
@@ -148,21 +138,20 @@ play.clickMan = function (key, x, y) {
     man.alpha = .6;
     com.pane.isShow = !1;
     play.nowManKey = key;
-    com.mans[key].ps = com.mans[key].bl(); //获得所有能着点
+    com.mans[key].ps = com.mans[key].bl(); // 获得所有能着点
     com.dot.dots = com.mans[key].ps
     com.show();
-    //com.get("selectAudio").start(0);
+    // com.get("selectAudio").start(0);
     com.get("selectAudio").play();
   }
 }
-
 // 点击着点
 play.clickPoint = function (x, y) {
   let key = play.nowManKey;
   let man = com.mans[key];
   if (play.nowManKey) {
     if (play.indexOfPs(com.mans[key].ps, [x, y])) {
-      // z(bill.createMove(play.map,man.x,man.y,x,y))
+      // z(bill.createMove(play.map,man.x,man.y,x,y));
       delete play.map[man.y][man.x];
       play.map[y][x] = key;
       com.showPane(man.x, man.y, x, y);
@@ -173,14 +162,13 @@ play.clickPoint = function (x, y) {
       play.nowManKey = !1;
       com.dot.dots = [];
       com.show();
-      com.get("clickAudio").play();
+      clickAudio.play();
       setTimeout("play.AIPlay()", 500);
     } else {
-      // alert("不能这么走哦！")	
+      // alert("不能这么走哦！");
     }
   }
 }
-
 // Ai自动走棋
 play.AIPlay = function () {
   play.my = -1;
@@ -193,16 +181,14 @@ play.AIPlay = function () {
   play.nowManKey = play.map[pace[1]][pace[0]];
   let key = play.map[pace[3]][pace[2]];
   key ? play.AIclickMan(key, pace[2], pace[3]) : play.AIclickPoint(pace[2], pace[3]);
-  com.get("clickAudio").play();
+  clickAudio.play();
 }
-
 // 检查是否长将
 play.checkFoul = function () {
   let p = play.pace;
   let len = parseInt(p.length, 10);
   return len > 11 && p[len - 1] == p[len - 5] && p[len - 5] == p[len - 9] ? p[len - 4].split("") : !1;
 }
-
 play.AIclickMan = function (key, x, y) {
   // 吃子
   com.mans[key].isShow = !1;
@@ -216,7 +202,6 @@ play.AIclickMan = function (key, x, y) {
   if (key == "j0") play.showWin(-1);
   if (key == "J0") play.showWin(1);
 }
-
 play.AIclickPoint = function (x, y) {
   let key = play.nowManKey;
   let man = com.mans[key];
@@ -230,22 +215,19 @@ play.AIclickPoint = function (x, y) {
   }
   com.show();
 }
-
 play.indexOfPs = function (ps, xy) {
   for (let i of ps)
     if (i[0] == xy[0] && i[1] == xy[1]) return !0;
   return !1;
 }
-
-//获得点击的着点
+// 获得点击的着点
 play.getClickPoint = function (e) {
   let domXY = com.getDomXY(com.canvas);
   let x = Math.round((e.pageX - domXY.x - com.pointStartX - 20) / com.spaceX);
   let y = Math.round((e.pageY - domXY.y - com.pointStartY - 20) / com.spaceY);
   return { "x": x, "y": y }
 }
-
-//获得棋子
+// 获得棋子
 play.getClickMan = function (e) {
   let clickXY = play.getClickPoint(e);
   let x = clickXY.x;
@@ -253,7 +235,6 @@ play.getClickMan = function (e) {
   if (x < 0 || x > 8 || y < 0 || y > 9) return !1;
   return (play.map[y][x] && play.map[y][x] != "0") ? play.map[y][x] : !1;
 }
-
 play.showWin = function (my) {
   play.isPlay = !1;
   alert(my === 1 ? "恭喜你，你赢了！" : "很遗憾，你输了！");

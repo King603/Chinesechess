@@ -1,5 +1,4 @@
 let bill = {};
-
 // 初始化
 bill.init = function () {
   if (com.store) {
@@ -9,7 +8,6 @@ bill.init = function () {
     com.show();
   } else bill.timer = setInterval(() => bill.init(), 300);
 }
-
 // 把所有棋谱写入棋谱列表
 bill.setBillList = function (map) {
   let list = com.get("billList")
@@ -24,7 +22,6 @@ bill.setBillList = function (map) {
   });
   bill.setBox(com.store[0], map);
 }
-
 // 棋谱分析 写入
 bill.setMove = function (bl, index, map) {
   map = com.arr2Clone(map);
@@ -43,7 +40,7 @@ bill.setMove = function (bl, index, map) {
     let newY = bl[n + 3];
     if (com.mans[map[newY][newX]])
       com.mans[map[newY][newX]].isShow = !1;
-      com.mans[map[y][x]].x = newX;
+    com.mans[map[y][x]].x = newX;
     com.mans[map[y][x]].y = newY;
     if (i == index)
       com.showPane(x, y, newX, newY);
@@ -52,15 +49,15 @@ bill.setMove = function (bl, index, map) {
   }
   return map;
 }
-
 // 写入棋谱
 bill.setBox = function (bl, initMap) {
   bl = bl.split("");
   let h = "";
   for (let i = 0; i < bl.length; i += 4)
     h += `<li id="move_${i / 4})">${com.createMove(com.arr2Clone(initMap), bl[i + 0], bl[i + 1], bl[i + 2], bl[i + 3])}</li>`;
-  com.get("billBox").innerHTML = h;
-  com.get("billBox").getElementsByTagName("li").forEach(li => {
+  let billBox = com.get("billBox");
+  billBox.innerHTML = h;
+  billBox.getElementsByTagName("li").forEach(li => {
     li.addEventListener("click", function () {
       bill.setMove(bl, this.getAttribute("id").split("_")[1], initMap);
       com.show();
